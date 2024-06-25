@@ -1,4 +1,4 @@
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState, useEffect, useRef } from 'react';
 import './App.css';
 import Quote from './components/Quote';
 import QuoteAxios from './components/QuoteAxios';
@@ -14,6 +14,10 @@ function App() {
 
   const [message, setMessage] = useState();
   const [error_message, setError_message] = useState();
+  const [file_id, setFile_id] = useState();
+
+  const [insights, setInsights] = useState({});
+  const [correlations, setCorrelations] = useState({});
 
   const handleSubmit = (file) => {
     const formData = new FormData();
@@ -29,20 +33,23 @@ function App() {
       const data = await res.json()
       setMessage(data.message);
       setError_message(data.error_message);
+      setFile_id(data.file_id)
     }
     fetchUpload();
   };
 
-  // useEffect(() => {
-  //   const fetchAnalyze = async () => {
-  //     if (!error_message) {
-  //       const res2 = await fetch('analyze/')
-  //       const data2 = await res2.json();
-  //       console.log(data2.results);
-  //     }
-  //   };
-  //   fetchAnalyze();
-  // }, [error_message]);
+  useEffect(() => {
+    const fetchAnalyze = async () => {
+      if (file_id) {
+        const res = await fetch(`analyze/${file_id}`)
+        const data = await res.json();
+        setInsights(data.insights)
+        setCorrelations(data.correlations)
+        setMessage(data.message)
+      }
+    };
+    fetchAnalyze();
+  }, [file_id]);
 
   return (
     <>
@@ -51,6 +58,7 @@ function App() {
         <p>Message: {message}</p>
         <p>Error_message: {error_message}</p>
       </div>
+      <Results insights={insights} correlations={correlations} />
       {/* <Routes>
         <Route path='/' element={<Upload handleSubmit={handleSubmit} />} />
         <Route path='/results' element={<Results />} />
