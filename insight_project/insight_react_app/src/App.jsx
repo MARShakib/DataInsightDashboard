@@ -16,6 +16,8 @@ function App() {
   const [error_message, setError_message] = useState();
   const [file_id, setFile_id] = useState();
 
+  const analysisReady = useRef(false)
+
   const [insights, setInsights] = useState({});
   const [correlations, setCorrelations] = useState({});
 
@@ -46,6 +48,7 @@ function App() {
         setInsights(data.insights)
         setCorrelations(data.correlations)
         setMessage(data.message)
+        analysisReady.current = true;
       }
     };
     fetchAnalyze();
@@ -58,7 +61,7 @@ function App() {
         <p>Message: {message}</p>
         <p>Error_message: {error_message}</p>
       </div>
-      <Results insights={insights} correlations={correlations} />
+      {analysisReady.current && <Results insights={insights} correlations={correlations} />}
       {/* <Routes>
         <Route path='/' element={<Upload handleSubmit={handleSubmit} />} />
         <Route path='/results' element={<Results />} />

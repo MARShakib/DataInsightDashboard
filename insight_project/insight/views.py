@@ -39,4 +39,5 @@ def analyze(request, id):
     json_reply["insights"] = numeric_data.describe().to_dict()
     json_reply["correlations"] = numeric_data.corr().to_dict()
     json_reply["message"] = f"id: {id} analyzed successfully"
+    item.delete()
     return JsonResponse(json_reply)
